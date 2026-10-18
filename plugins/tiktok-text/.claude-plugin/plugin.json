@@ -1,0 +1,14 @@
+{
+  "name": "tiktok-text",
+  "displayName": "TikTok Text",
+  "version": "1.0.0",
+  "description": "Burn on-screen text onto videos that looks exactly like TikTok's in-app Classic text (white, outline, yellow, gold, lilac, iPhone emoji). Copies a reference TikTok's captions frame-accurately, or writes new ones.",
+  "author": {
+    "name": "WakaChobii",
+    "url": "https://github.com/WakaChobii"
+  },
+  "homepage": "https://github.com/WakaChobii/tiktok-text",
+  "repository": "https://github.com/WakaChobii/tiktok-text",
+  "license": "MIT",
+  "keywords": ["tiktok", "video", "captions", "text", "ffmpeg"]
+}

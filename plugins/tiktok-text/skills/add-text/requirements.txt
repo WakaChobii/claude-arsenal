@@ -1,0 +1,9 @@
+# Python packages for the add-text skill. setup_check.py installs these into a private environment for you.
+# Tested 2026-10-17 with Python 3.12.5 and the versions in brackets.
+numpy>=1.24          # (2.2.6)
+Pillow>=10.0         # (12.3.0)  draws the text
+scipy>=1.10          # (1.14.1)  outlines, text detection
+fonttools>=4.40      # (4.64.0)  builds the hinting-free TikTok Sans copy
+regex>=2023.0        # (2.5.146) splits emoji out of a line
+opencv-python>=4.8   # (4.14.0)  only for the fit_<n>.png comparison picture
+# Also needed (not pip): ffmpeg + ffprobe on PATH. setup_check.py tells you the install command for your system.

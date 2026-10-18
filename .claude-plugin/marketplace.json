@@ -1,0 +1,15 @@
+{
+  "name": "tiktok-text",
+  "description": "TikTok-style on-screen text for your videos",
+  "owner": {
+    "name": "WakaChobii",
+    "url": "https://github.com/WakaChobii"
+  },
+  "plugins": [
+    {
+      "name": "tiktok-text",
+      "source": "./plugins/tiktok-text",
+      "description": "Add text to videos that looks exactly like TikTok's in-app text, copied from a reference TikTok or written new"
+    }
+  ]
+}
