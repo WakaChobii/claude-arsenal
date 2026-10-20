@@ -1,7 +1,8 @@
 """First-run setup + check for the add-text skill.
 
-  python setup_check.py DATA_DIR
-      Creates a private Python environment in DATA_DIR/venv (once), installs requirements.txt into it, checks
+  python setup_check.py [DATA_DIR]
+      Creates a private Python environment in DATA_DIR/venv (once; default DATA_DIR = ~/.claude/tiktok-skills,
+      shared with the product-reveal skill), installs requirements.txt into it, checks
       ffmpeg/ffprobe and builds the font copy. Safe to re-run: takes a couple of seconds once everything is there.
       Last line is either
         READY PY=<path to the environment's python>     -> run every add-text script with that python
@@ -16,6 +17,7 @@ SKILL = Path(__file__).resolve().parent.parent
 REQS = SKILL / "requirements.txt"
 PACKAGES = {"numpy": "numpy", "PIL": "Pillow", "scipy": "scipy", "fontTools": "fonttools", "regex": "regex",
             "cv2": "opencv-python"}                      # import name -> pip name
+DEFAULT_DATA = Path.home() / ".claude" / "tiktok-skills"
 MARKER = ".add-text-data"                                # tells tiktok_text.py where to keep its font cache/emoji
 
 
@@ -56,11 +58,12 @@ def _venv_python(venv):
     return venv / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
 
 
-def setup(data_dir):
+def setup(data_dir=None):
     if sys.version_info < (3, 9):
         print(f"NOT READY: Python {sys.version.split()[0]} is too old. Install Python 3.9+ from https://python.org")
         return 1
-    data = Path(data_dir).expanduser()
+    # an empty or unexpanded argument (e.g. "${VAR}" that the shell left alone) means: use the default
+    data = Path(data_dir).expanduser() if data_dir and "$" not in data_dir else DEFAULT_DATA
     data.mkdir(parents=True, exist_ok=True)
     (data / MARKER).write_text("add-text plugin data (python env, font cache, emoji)\n", encoding="utf-8")
     venv = data / "venv"
@@ -95,6 +98,4 @@ def setup(data_dir):
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
-    if len(sys.argv) == 2:
-        sys.exit(setup(sys.argv[1]))
-    sys.exit(0 if check() else 1)
+    sys.exit(setup(sys.argv[1] if len(sys.argv) > 1 else None))

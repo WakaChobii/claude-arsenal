@@ -20,5 +20,5 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Note: the TikTok Sans font in plugins/tiktok-text/skills/add-text/fonts/ is not covered by this licence. It is
+Note: the TikTok Sans font in skills/add-text/fonts/ is not covered by this licence. It is
 licensed under the SIL Open Font License 1.1 (see OFL.txt in that folder).

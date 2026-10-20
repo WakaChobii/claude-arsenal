@@ -5,7 +5,7 @@ description: Burn on-screen text onto a video so it looks exactly like TikTok's 
 
 # Add TikTok-style text to a video
 
-This skill's files are in `${CLAUDE_PLUGIN_ROOT}/skills/add-text/`:
+This skill's files are in `${CLAUDE_SKILL_DIR}/`:
 - `scripts/add_text.py`: **use this.** It runs the whole job in two commands.
 - `scripts/caption_match.py` (detect / fit / check) and `scripts/tiktok_text.py` (draws + burns): the engine.
 - `scripts/setup_check.py`: first-run setup and check.
@@ -18,10 +18,10 @@ plain font, etc.). It won't match.
 Run, with whatever `python` / `python3` is on PATH:
 
 ```
-python "${CLAUDE_PLUGIN_ROOT}/skills/add-text/scripts/setup_check.py" "${CLAUDE_PLUGIN_DATA}"
+python "${CLAUDE_SKILL_DIR}/scripts/setup_check.py"
 ```
 
-- The first run creates a private Python environment in the plugin's data folder and installs the packages
+- The first run creates a private Python environment in `~/.claude/tiktok-skills/` and installs the packages
   (about 1-2 minutes). Tell the user that's what is happening.
 - The last line is `READY PY=<path>`. **Use that `<path>` as the python for every command below** (written `PY`).
 - `NOT READY: ...` says what's missing and the exact fix:
@@ -33,7 +33,7 @@ python "${CLAUDE_PLUGIN_ROOT}/skills/add-text/scripts/setup_check.py" "${CLAUDE_
   Then run setup again.
 - No `python` command? Try `python3`, or `py` on Windows.
 
-In the commands below, `S` = `${CLAUDE_PLUGIN_ROOT}/skills/add-text/scripts`. Quote every path. In PowerShell, start
+In the commands below, `S` = `${CLAUDE_SKILL_DIR}/scripts`. Quote every path. In PowerShell, start
 each command with `& ` (e.g. `& "PY" "S/add_text.py" ...`).
 
 ## Rules

@@ -1,0 +1,14 @@
+{
+  "name": "tiktok-skills",
+  "displayName": "TikTok Skills",
+  "version": "2.0.0",
+  "description": "Skills for making TikTok videos. add-text: burn on-screen text that looks exactly like TikTok's in-app Classic text, copied frame-accurately from a reference or written new. product-reveal: remake a reference TikTok's product shots with your product in new rooms, captions removed and the label kept exact (Higgsfield + ffmpeg/OpenCV).",
+  "author": {
+    "name": "WakaChobii",
+    "url": "https://github.com/WakaChobii"
+  },
+  "homepage": "https://github.com/WakaChobii/tiktok-skills",
+  "repository": "https://github.com/WakaChobii/tiktok-skills",
+  "license": "MIT",
+  "keywords": ["tiktok", "video", "captions", "text", "ffmpeg", "product", "higgsfield", "kling"]
+}

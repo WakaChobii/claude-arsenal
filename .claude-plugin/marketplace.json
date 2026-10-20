@@ -1,15 +1,15 @@
 {
-  "name": "tiktok-text",
-  "description": "TikTok-style on-screen text for your videos",
+  "name": "tiktok-skills",
+  "description": "Claude Code skills for making TikTok videos",
   "owner": {
     "name": "WakaChobii",
     "url": "https://github.com/WakaChobii"
   },
   "plugins": [
     {
-      "name": "tiktok-text",
-      "source": "./plugins/tiktok-text",
-      "description": "Add text to videos that looks exactly like TikTok's in-app text, copied from a reference TikTok or written new"
+      "name": "tiktok-skills",
+      "source": ".",
+      "description": "TikTok-style on-screen text (add-text) and AI product-reveal remakes in new rooms (product-reveal)"
     }
   ]
 }

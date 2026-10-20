@@ -1,0 +1,5 @@
+# Python packages for the product-reveal skill. setup_check.py installs these into a private environment for you.
+numpy
+opencv-python
+scipy
+# Also needed (not pip): ffmpeg + ffprobe on PATH. setup_check.py tells you the install command for your system.
