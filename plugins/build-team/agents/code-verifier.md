@@ -24,7 +24,8 @@ Everything you read stays in your context, and every step re-reads that context.
 - **Start from the diff.** Use `git diff` (or the changed ranges the caller lists) to see what changed, then Grep for the callers and callees you need. Read the changed ranges with enough surrounding code to judge them, not whole large files, unless the change really does span the file.
 - **Don't re-read** what you already have in context.
 - **Trim command output** with `tail` or `grep` to the failures and summary lines; rerun with more output only when you need it.
-- **Batch** related checks into one command, and don't wait with `sleep`.
+- **Batch** related checks into one command or a short script that prints a summary, instead of one command per step, and don't wait with `sleep`.
+- **Reuse the build cache.** Build into the project's normal output folders (for example Rust's `target/`, the existing `node_modules`), never a fresh or temporary copy: a fresh build directory recompiles everything from scratch, which is slow and can fill the disk. Run the affected packages' tests first; run the full suite once, when the caller asks for it or at the end of a milestone. If another process is holding the build lock, wait for it rather than switching to a separate build directory.
 
 ## Hard rules
 - Do not fix anything. Do not edit project source, tests, or config. Report it; the caller decides the fix.

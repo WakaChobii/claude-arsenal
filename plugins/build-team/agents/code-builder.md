@@ -20,7 +20,8 @@ Everything you read stays in your context, and every step re-reads that context,
 - **Read with Read, change with Edit.** Find the right place with Grep, then Read just that range of a large file (offset and limit) rather than the whole thing. Make changes with Edit (or Write for new files), not with shell patch scripts, `sed -i`, or heredocs that rewrite files: a failed Edit costs one short retry, while a failed patch script gets resent whole.
 - **Don't re-read** a file you already have in context unless it has changed since.
 - **Trim command output.** Pipe builds and tests through `tail` or `grep` for the errors and the summary line, and rerun with more output only when you need it.
-- **Batch shell work** into one command where you can, and don't wait with `sleep`; run long commands in the foreground with a timeout.
+- **Batch shell work.** Combine related steps (build, then run the affected tests, then lint) into one command or a short script that prints only a summary, instead of one command per step. Every step costs a model turn, so fewer, bigger steps finish faster. Don't wait with `sleep`; run long commands in the foreground with a timeout.
+- **Reuse the build cache.** Build into the project's normal output folders (for example Rust's `target/`, the existing `node_modules`), never a fresh or temporary copy: a fresh build directory recompiles everything from scratch, which is slow and can fill the disk. Build and test only the packages your task touches (for example `cargo test -p <crate>`, a single test file), not the whole workspace.
 - **Screenshots** (when checking UI work) stay in context for the rest of the task: capture only the region you need, look once, and note what you saw.
 
 ## When the spec is unclear

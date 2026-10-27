@@ -1,7 +1,7 @@
 {
   "name": "build-team",
   "displayName": "Build Team",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Build software with a team of subagents. code-explorer reads the codebase and reports back facts with file:line references; code-builder implements a well-scoped spec; code-verifier independently tries to break what was built; ui-reviewer uses the interface like a real user and reviews its usability and visual design. The build-software skill runs them as a loop: your main session designs the spec, cheaper models do the reading, coding and testing in parallel, and large builds go milestone by milestone.",
   "author": {
     "name": "WakaChobii",

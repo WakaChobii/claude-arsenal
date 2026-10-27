@@ -27,7 +27,7 @@ One spec for a large build means guessing at details of code that doesn't exist 
 
 **Plan milestones.** Split the build into 3-8 milestones, each ending in something that works and can be verified on its own. A typical order is foundation (data model, core types, storage), then core logic, then interfaces (API, UI, CLI), then integration and polish. Write the plan as a short list: each milestone's goal, what it delivers, and how you'll know it works.
 
-**Get the plan approved.** Show the user the milestone plan, plus any major technical choices (stack, architecture, key libraries), before building anything. Redirecting now costs a message; redirecting after three milestones costs a rebuild.
+**Get the plan approved.** Show the user the milestone plan, plus any major technical choices (stack, architecture, key libraries), before building anything. Redirecting now costs a message; redirecting after three milestones costs a rebuild. Ask every question the whole plan will need in this same round, including ones that only matter in later milestones (licences, accounts or API keys, paid services, platform choices), so the build doesn't stop partway to wait for an answer.
 
 **New projects start with a scaffold.** With no existing code, explorers have nothing to read and builders have no conventions to match, so each parallel builder would invent its own. Make milestone 1 a scaffold, built by a single builder or by you: project structure, stack and dependencies, config, a test setup that runs, one small working example of each layer, and a short conventions note (naming, file layout, error handling, testing pattern). Verify it runs before parallel work begins. Every later spec points builders at the scaffold as the pattern to follow.
 
@@ -40,6 +40,8 @@ Make sure you know what "done" looks like before any agent runs, because every l
 - Restate the goal in a few sentences: what it does, for whom, and how you'll know it works.
 - Ask the user only about decisions that would change what gets built (behavior, UX, data, scope, and for new projects, stack or platform if they care). Don't ask things the code can answer; that's what exploration is for.
 - If the user already gave a clear brief, don't interrogate them. Move on.
+- Batch your questions into one round rather than asking as they come up: every question mid-build stops all the work until the user answers.
+- **Pre-flight check** before the first agent runs, so the build doesn't stall halfway: the project builds and its tests run as they are now, there's enough free disk space for the build (compiled languages like Rust or C++ can need several GB), and no leftover processes from earlier sessions are holding the ports the app uses. Fix or ask about anything wrong now, in the same round as your other questions.
 
 ## 2. Explore
 
@@ -90,6 +92,7 @@ How the work is split decides whether parallel builders collide.
 - **Shared hotspots** (route registries, barrel/index exports, shared type files, schema, config): give them to one task, or have that task run first, or make the edit yourself before or after the builders.
 - **Dependencies:** tasks that need another's output go in a later wave. Shared contracts defined in the spec let many tasks start at once even when they reference each other's interfaces.
 - **Task size:** each task should be something one builder can finish and verify on its own. Prefer a few meaningful tasks over many tiny ones, since each builder has to re-read context. But don't make tasks so big that a builder runs for a very long time: every step re-reads everything it has gathered, so one task that grows to a huge context costs more than two half-size tasks. Split a task that would touch many large files or several separate concerns.
+- **Balance the wave.** A wave takes as long as its slowest builder, and the others sit idle waiting. Estimate each task's size, and if one is much bigger than the rest, split it, or start it in an earlier wave so it isn't holding up everyone else.
 - **Point builders at the right places.** Give each task the specific files, functions and line ranges the explorers found, so builders read those instead of whole files.
 - If file ownership genuinely can't be separated and the project is a git repo, `isolation: "worktree"` keeps builders apart, but you'll then have to merge their branches. Disjoint files is usually simpler.
 
@@ -113,9 +116,9 @@ Wait for a wave to finish before launching the next one that depends on it.
 
 Builder reports describe what they intended, not necessarily what happened, and builders checking their own work tend to see what they meant to write. So verification is done independently, by a `code-verifier` agent, rather than by you reading every diff (which would spend the main context this process exists to save).
 
-**When:** after each wave of builders whose work forms a checkable whole, and always at the end of a medium build or a milestone. One verifier over a whole wave beats one per builder, because most bugs live at the seams between tasks.
+**When:** after each wave of builders whose work forms a checkable whole, and always at the end of a medium build or a milestone. One verifier over a whole wave beats one per builder, because most bugs live at the seams between tasks. Verification blocks the next step, so never run verifiers one after another over the same milestone (for example a backend pass, then a separate full-stack pass): use one verifier for the whole thing, or if it's too big for one, split it by area and run those verifiers in parallel.
 
-**Brief the verifier with:** the full spec, the list of tasks and files that changed (or the git range), the builders' "Not done / concerns" notes, and on a large build the earlier milestones' verification commands so it can catch regressions. It defaults to Sonnet; use `model: "opus"` for a large milestone or anything security- or data-sensitive, since finding subtle bugs takes more judgment than writing code to a spec.
+**Brief the verifier with:** the full spec, the list of tasks and files that changed (or the git range), the builders' "Not done / concerns" notes, and on a large build the earlier milestones' verification commands so it can catch regressions. Tell it to use the project's existing build output rather than a fresh build directory. It defaults to Sonnet; use `model: "opus"` for a large milestone or anything security- or data-sensitive, since finding subtle bugs takes more judgment than writing code to a spec.
 
 **Act on the report:**
 - **PASS:** spot-check one or two of its claims that matter most (for example, rerun the main test command yourself), then move on.
