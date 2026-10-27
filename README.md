@@ -47,7 +47,8 @@ coding and testing, often several at once.
 
 **How `build-software` works**
 1. **Size it up.** Small changes are done directly. Medium ones run the loop once. Large builds and brand-new projects
-   are split into milestones (new projects start with a scaffold), and you approve the plan first.
+   are split into milestones (new projects start with a scaffold), and you approve the plan first. Milestones
+   that don't depend on each other run in parallel (2-3 at once), then join in an integration milestone.
 2. **Understand.** It clarifies only the decisions that would change what gets built.
 3. **Explore.** It sends `code-explorer` agents out in parallel, each with a focused question.
 4. **Design the spec.** The main session decides the architecture, interfaces and tests, and writes them into a spec,
