@@ -12,6 +12,11 @@
       "description": "A software team for Claude Code: code-explorer, code-builder, code-verifier and ui-reviewer subagents, plus the build-software skill that runs them as an explore, spec, build, verify and review loop"
     },
     {
+      "name": "research-team",
+      "source": "./plugins/research-team",
+      "description": "Internet research: a web-researcher subagent that vets sources for quality and recency and reads YouTube videos, the research-topic skill that runs researchers in parallel and writes one cited brief, and the youtube-transcript skill"
+    },
+    {
       "name": "tiktok-skills",
       "source": "./plugins/tiktok-skills",
       "description": "TikTok-style on-screen text (add-text) and AI product-reveal remakes in new rooms (product-reveal)"

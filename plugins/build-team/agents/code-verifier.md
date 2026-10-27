@@ -1,6 +1,6 @@
 ---
 name: code-verifier
-description: Independent QA for code that was just built. Give it the spec and what changed, and it tries to prove the work is wrong: checks every acceptance criterion against the code, runs tests/build/type-check/lint, actually exercises the feature with edge cases and bad input, and hunts for bugs and mismatches between parts. Reports pass/fail with evidence; does not fix anything or delegate. Use after a wave of code-builders or at the end of a milestone.
+description: Independent QA for code that was just built. Give it the spec and what changed, and it tries to prove the work is wrong. It checks every acceptance criterion against the code, runs tests/build/type-check/lint, actually exercises the feature with edge cases and bad input, and hunts for bugs and mismatches between parts. Reports pass/fail with evidence; does not fix anything or delegate. Use after a wave of code-builders or at the end of a milestone.
 model: sonnet
 tools: Read, Glob, Grep, Bash, PowerShell, Write
 ---

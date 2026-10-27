@@ -7,6 +7,7 @@ every session, so keeping installs lean pays off.
 | Plugin | What's in it | What it's for |
 |---|---|---|
 | [`build-team`](plugins/build-team) | 4 subagents + 1 skill | Building software with a team of agents: explore, spec, build in parallel, verify, review the UI |
+| [`research-team`](plugins/research-team) | 1 subagent + 2 skills | Internet research: vetted, cited answers from web pages and YouTube videos, or a parallel team that researches a whole topic |
 | [`tiktok-skills`](plugins/tiktok-skills) | 2 skills | Making TikTok videos: TikTok-style on-screen text and AI product-reveal remakes |
 
 ## Install
@@ -20,6 +21,7 @@ Then install the plugins you want:
 
 ```
 /plugin install build-team@claude-arsenal
+/plugin install research-team@claude-arsenal
 /plugin install tiktok-skills@claude-arsenal
 ```
 
@@ -72,6 +74,49 @@ connectors), so they start with a small context. The skill keeps Opus for the ma
 lets a builder use it when a task genuinely needs it. The agents also follow token-saving habits: reading only the
 part of a file they need, editing with the Edit tool instead of patch scripts, trimming command output, and (for
 the UI reviewer) checking facts from the page instead of screenshots and keeping screenshots small.
+
+---
+
+## research-team
+Research that you can trust. A cheap, specialised researcher does the searching and reading, judges every source, and
+hands back a short cited answer, so your main session never fills up with raw web pages.
+
+| Piece | Type | Role |
+|---|---|---|
+| [`web-researcher`](plugins/research-team/agents/web-researcher.md) | subagent | Researches one question: plans the search, vets each source for quality and recency, reads the real pages and YouTube transcripts, cross-checks claims, and returns a cited report that separates confirmed facts from uncertain ones |
+| [`research-topic`](plugins/research-team/skills/research-topic/SKILL.md) | skill | Splits a big topic into distinct angles, runs several web-researchers in parallel, fills gaps, and writes one cited brief (summary, core knowledge, debates, trends vs. what lasts, common mistakes, learning path, best sources) |
+| [`youtube-transcript`](plugins/research-team/skills/youtube-transcript/SKILL.md) | skill | Gets any YouTube video's transcript plus source metadata (channel, subscribers, upload date, views) in seconds, so videos can be read, quoted and cited with timestamps |
+
+**How `web-researcher` judges sources**
+- **Ranks sources in tiers.** Official sources, original research and changelogs come first, then reputable expert
+  outlets, then forums and practitioner videos. SEO listicles, affiliate roundups and AI filler are avoided.
+- **Checks each source.** It looks at who is behind it, checks conflicts of interest, looks for evidence, and
+  confirms that other good sources agree.
+- **Watches recency.** It decides how fast the topic moves, searches for the current year on fast topics, and
+  checks each page's real date.
+- **Cross-checks.** Key claims need one primary source or two independent ones. It never invents a URL, quote or
+  number.
+- **Handles pages that need JavaScript.** It gets the same content as plain data instead, for example Apple's HIG as
+  JSON, or raw GitHub files.
+
+**YouTube.** `youtube-transcript` uses YouTube's own captions (about 3-6 seconds per video). It falls back to
+yt-dlp, then to local speech-to-text for videos without captions. Results are cached.
+
+The tool runs in its own Python environment at `~/.claude/youtube-transcript-env`. Claude creates it on first use
+(Python 3.11+, about a minute). See the skill's First-time setup section.
+
+**Safety.** Web pages can contain text that tries to trick AI agents, so `web-researcher` has no file-writing tool
+and no connectors. Its shell is locked by a hook (`hooks/hooks.json`) to the transcript command only. That hook only
+restricts `web-researcher`: your main session and other agents are not affected.
+
+**Use it** by asking anything that needs current information from the internet, or say "use the web-researcher".
+Run `/research-topic` (or `/research-team:research-topic`) for a whole subject. To make Claude reach for them on
+its own, add lines like these to your `~/.claude/CLAUDE.md`:
+
+```
+For anything on the internet, send a web-researcher agent instead of running web searches yourself.
+For learning a topic in depth or research too broad for one question, use the research-topic skill.
+```
 
 ---
 
@@ -129,6 +174,12 @@ plugins/
     .claude-plugin/plugin.json
     agents/                       code-explorer, code-builder, code-verifier, ui-reviewer
     skills/build-software/
+  research-team/
+    .claude-plugin/plugin.json
+    agents/                       web-researcher
+    hooks/hooks.json              locks web-researcher's shell to the transcript tool
+    skills/research-topic/
+    skills/youtube-transcript/
   tiktok-skills/
     .claude-plugin/plugin.json
     skills/add-text/

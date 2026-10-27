@@ -1,0 +1,16 @@
+{
+  "description": "Locks the web-researcher agent's shell to the YouTube transcript tool. Other agents and the main session are not affected.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/skills/youtube-transcript/scripts/guard.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}

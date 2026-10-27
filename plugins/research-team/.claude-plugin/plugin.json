@@ -1,0 +1,14 @@
+{
+  "name": "research-team",
+  "displayName": "Research Team",
+  "version": "1.0.0",
+  "description": "Internet research for Claude Code: a web-researcher subagent that vets sources for quality and recency and reads YouTube videos via transcripts, the research-topic skill that runs several researchers in parallel and synthesizes one cited brief, and the youtube-transcript skill.",
+  "author": {
+    "name": "WakaChobii",
+    "url": "https://github.com/WakaChobii"
+  },
+  "homepage": "https://github.com/WakaChobii/claude-arsenal",
+  "repository": "https://github.com/WakaChobii/claude-arsenal",
+  "license": "MIT",
+  "keywords": ["research", "web", "search", "youtube", "transcript", "subagents", "sources"]
+}

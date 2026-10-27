@@ -1,0 +1,5 @@
+yt-dlp[default]>=2026.10.26
+youtube-transcript-api>=1.2.4
+faster-whisper>=1.2.1
+# faster-whisper 1.2.1 passes metadata_errors to av.open(), which PyAV 16 removed
+av<16
