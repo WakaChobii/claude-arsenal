@@ -1,13 +1,15 @@
 ---
 name: build-software
-description: Orchestrated workflow for building software with subagents, from a single feature up to a whole new app or system. The main session clarifies what to build, sends parallel code-explorer agents to gather context, writes a precise spec, splits it into non-overlapping tasks for parallel code-builder agents, then has code-verifier agents independently test the result and loops fixes until it passes; large builds are broken into milestones that each run this loop, and new projects start with a scaffold. Use this whenever the user wants something built in code: a new feature, a multi-file change, a refactor, a new module or subsystem, or an entire app or tool from scratch, even if they just describe what they want ("add X to my app", "make it so users can Y", "build me a Z", "let's make a new project that...") without mentioning agents or specs. Also use when the user types /build-software. Skip it for one-file tweaks, quick bug fixes, and questions.
+description: Orchestrated workflow for building software with subagents, from a single feature up to a whole new app or system. The main session clarifies what to build, sends parallel code-explorer agents to gather context, writes a precise spec, splits it into non-overlapping tasks for parallel code-builder agents, then has code-verifier agents independently test the result and loops fixes until it passes, with ui-reviewer agents checking usability and visual design for anything with a user interface; large builds are broken into milestones that each run this loop, and new projects start with a scaffold. Use this whenever the user wants something built in code: a new feature, a multi-file change, a refactor, a new module or subsystem, or an entire app or tool from scratch, even if they just describe what they want ("add X to my app", "make it so users can Y", "build me a Z", "let's make a new project that...") without mentioning agents or specs. Also use when the user types /build-software. Skip it for one-file tweaks, quick bug fixes, and questions.
 ---
 
 # Build Software
 
-The main session is the architect and reviewer. It does not read the codebase wholesale or write the implementation itself. Exploration goes to `code-explorer` agents, implementation to `code-builder` agents, and independent testing to `code-verifier` agents; the main session spends its context on understanding the request, designing and writing specs, and deciding what to do with the results. This keeps the main context lean and lets work run in parallel.
+The main session is the architect and reviewer. It does not read the codebase wholesale or write the implementation itself. Exploration goes to `code-explorer` agents, implementation to `code-builder` agents, independent testing to `code-verifier` agents, and hands-on review of user-facing interfaces to `ui-reviewer` agents; the main session spends its context on understanding the request, designing and writing specs, and deciding what to do with the results. This keeps the main context lean and lets work run in parallel.
 
 If these agents were installed as part of a plugin, they may be listed under a prefixed name (for example `build-team:code-builder`). Use whichever name appears in your list of available agents.
+
+Use these agents rather than general-purpose ones for any job they cover. They carry only the tools they need, so they start with a small context; a general-purpose agent loads every tool and connector, which can multiply the cost of every step it takes.
 
 ## 0. Size it up
 
@@ -87,7 +89,8 @@ How the work is split decides whether parallel builders collide.
 - **Each file has exactly one owner.** Two builders editing the same file in the same checkout will overwrite each other.
 - **Shared hotspots** (route registries, barrel/index exports, shared type files, schema, config): give them to one task, or have that task run first, or make the edit yourself before or after the builders.
 - **Dependencies:** tasks that need another's output go in a later wave. Shared contracts defined in the spec let many tasks start at once even when they reference each other's interfaces.
-- **Task size:** each task should be something one builder can finish and verify on its own. Prefer a few meaningful tasks over many tiny ones, since each builder has to re-read context.
+- **Task size:** each task should be something one builder can finish and verify on its own. Prefer a few meaningful tasks over many tiny ones, since each builder has to re-read context. But don't make tasks so big that a builder runs for a very long time: every step re-reads everything it has gathered, so one task that grows to a huge context costs more than two half-size tasks. Split a task that would touch many large files or several separate concerns.
+- **Point builders at the right places.** Give each task the specific files, functions and line ranges the explorers found, so builders read those instead of whole files.
 - If file ownership genuinely can't be separated and the project is a git repo, `isolation: "worktree"` keeps builders apart, but you'll then have to merge their branches. Disjoint files is usually simpler.
 
 ## 5. Build
@@ -102,7 +105,7 @@ The builder defaults to Sonnet, and nearly every task should stay there. `haiku`
 
 When a task feels too hard for Sonnet, the usual problem is that the spec still leaves real decisions open. Fix that first: write the exact algorithm, data flow, invariants, and known pitfalls into the task so the builder is following decisions, not making them. Most "tricky" tasks become routine once the hard thinking is in the spec, and that thinking belongs to you anyway.
 
-Use `opus` for a builder only when correctness depends on subtle reasoning that can't be fully written down ahead of time, such as real-time or lock-free code, concurrency, security-sensitive logic, or data-integrity code where a quiet mistake corrupts data. Never use it for UI, glue code, CRUD, wiring, or routine features, however large. When you do use it, give the user a one-line reason in your progress update so the choice is visible.
+Use `opus` for a builder only when correctness depends on subtle reasoning that can't be fully written down ahead of time, such as real-time or lock-free code, concurrency, security-sensitive logic, or data-integrity code where a quiet mistake corrupts data. Never use it for UI, glue code, CRUD, wiring, or routine features, however large. When you do use it, give the user a one-line reason in your progress update so the choice is visible. These rules win over model choices written in a plan, handoff note, or earlier spec, since those are often written before this guidance applied. When you write a handoff or plan yourself, leave model choices out of it.
 
 Wait for a wave to finish before launching the next one that depends on it.
 
@@ -121,6 +124,15 @@ Builder reports describe what they intended, not necessarily what happened, and 
 - **Cap the loop.** If the same problem survives two fix-and-verify rounds, stop and bring it to the user with what was tried, instead of looping.
 
 Also read each builder's "Not done / concerns" yourself. Don't drop those on the floor.
+
+### UI review
+When the build adds or changes an interface people use (a web or desktop app's screens, not an API or a CLI), run a `ui-reviewer` once the verifier has passed, so it reviews working code. The verifier checks that the spec was met; the reviewer checks that the result is easy and pleasant to use, which a spec rarely captures.
+
+- **One reviewer per area or flow.** Screenshots stay in an agent's context, so a single reviewer covering everything gets slower and more expensive with every step. Give each reviewer a focused scope (for example "the recording flow" or "the settings dialog"), small enough to cover in about 30 screenshots. Separate areas can run in parallel if the app can run more than once at the same time (separate ports); otherwise run them one after another.
+- **Brief it with:** what the feature is for and who uses it, the flows to walk through, how to run the app (commands, ports, test data), the window sizes to check, and any folder of earlier review scripts it can reuse.
+- **Turn findings into fixes.** Send Blocker, Major and Minor issues to builders as fix tasks, using the reviewer's concrete fixes (exact values, wording, behavior). Batch Polish items into one task, and skip any that aren't worth it.
+- **Re-check with a fresh reviewer.** After the fixes, start a new `ui-reviewer` (not the old one) with only the list of issues to re-check and the earlier scripts. It starts with a small context and doesn't re-review everything.
+- **Cap it.** One review, one fix pass, and one re-check is the normal loop. Only go further for Blocker or Major issues that are still open, and stop and ask the user if a design question keeps coming back.
 
 ## 7. Report
 

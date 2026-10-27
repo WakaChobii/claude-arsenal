@@ -6,7 +6,7 @@ every session, so keeping installs lean pays off.
 
 | Plugin | What's in it | What it's for |
 |---|---|---|
-| [`build-team`](plugins/build-team) | 3 subagents + 1 skill | Building software with a team of agents: explore, spec, build in parallel, verify |
+| [`build-team`](plugins/build-team) | 4 subagents + 1 skill | Building software with a team of agents: explore, spec, build in parallel, verify, review the UI |
 | [`tiktok-skills`](plugins/tiktok-skills) | 2 skills | Making TikTok videos: TikTok-style on-screen text and AI product-reveal remakes |
 
 ## Install
@@ -42,6 +42,7 @@ coding and testing, often several at once.
 | [`code-explorer`](plugins/build-team/agents/code-explorer.md) | subagent (read-only) | Investigates a question in the codebase and returns a short briefing with `file:line` references instead of raw file dumps |
 | [`code-builder`](plugins/build-team/agents/code-builder.md) | subagent | Implements a well-scoped spec exactly, matches the codebase's conventions, stays inside its assigned files, verifies, and reports |
 | [`code-verifier`](plugins/build-team/agents/code-verifier.md) | subagent (QA) | Independently tries to prove the work is wrong: checks each acceptance criterion, runs the tests, exercises the feature with edge cases, reports pass/fail with evidence |
+| [`ui-reviewer`](plugins/build-team/agents/ui-reviewer.md) | subagent (design review) | Uses the app in a browser like a first-time user, judges usability and visual design (hierarchy, spacing, typography, color, feedback, accessibility), and returns ranked issues with exact, buildable fixes |
 | [`build-software`](plugins/build-team/skills/build-software/SKILL.md) | skill | The workflow that runs the team |
 
 **How `build-software` works**
@@ -53,7 +54,8 @@ coding and testing, often several at once.
    including exact shared contracts so parallel builders agree without talking to each other.
 5. **Build.** It splits the work so every file has exactly one owner, then runs `code-builder` agents in parallel.
 6. **Verify and fix.** A `code-verifier` checks the combined result. Failures go back to the owning builder, and the
-   loop stops and asks you if the same problem survives two rounds.
+   loop stops and asks you if the same problem survives two rounds. If the build changed screens people use,
+   `ui-reviewer` agents (one per area) then review them, builders apply the fixes, and a fresh reviewer re-checks.
 7. **Report.** It tells you what was built, how it was verified, and anything left open.
 
 **Use it** by describing what you want built, or run `/build-software` (or `/build-team:build-software` when
@@ -66,7 +68,9 @@ use the build-software skill. Do small one-file changes directly.
 
 **Models:** the subagents run on Sonnet by default, and each one only gets the file and shell tools it needs (no
 connectors), so they start with a small context. The skill keeps Opus for the main session's design work, and only
-lets a builder use it when a task genuinely needs it.
+lets a builder use it when a task genuinely needs it. The agents also follow token-saving habits: reading only the
+part of a file they need, editing with the Edit tool instead of patch scripts, trimming command output, and (for
+the UI reviewer) checking facts from the page instead of screenshots and keeping screenshots small.
 
 ---
 
@@ -122,7 +126,7 @@ will tell you.
 plugins/
   build-team/
     .claude-plugin/plugin.json
-    agents/                       code-explorer, code-builder, code-verifier
+    agents/                       code-explorer, code-builder, code-verifier, ui-reviewer
     skills/build-software/
   tiktok-skills/
     .claude-plugin/plugin.json

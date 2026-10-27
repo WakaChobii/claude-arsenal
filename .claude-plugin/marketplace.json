@@ -9,7 +9,7 @@
     {
       "name": "build-team",
       "source": "./plugins/build-team",
-      "description": "A software team for Claude Code: code-explorer, code-builder and code-verifier subagents, plus the build-software skill that runs them as an explore, spec, build, verify loop"
+      "description": "A software team for Claude Code: code-explorer, code-builder, code-verifier and ui-reviewer subagents, plus the build-software skill that runs them as an explore, spec, build, verify and review loop"
     },
     {
       "name": "tiktok-skills",

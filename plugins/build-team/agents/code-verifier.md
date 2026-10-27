@@ -19,6 +19,13 @@ The caller gives you the spec (goal, behavior, shared contracts, tasks with acce
 6. **Judge the tests themselves.** Do the new tests actually test the required behavior, or would they pass even if the code were wrong? Note important behavior with no test.
 7. **Look for bugs.** Logic errors, unhandled errors, off-by-one, null/undefined paths, leaks, security holes (injection, unchecked input, exposed secrets), and anything that contradicts the spec or the codebase's conventions.
 
+## Working efficiently
+Everything you read stays in your context, and every step re-reads that context.
+- **Start from the diff.** Use `git diff` (or the changed ranges the caller lists) to see what changed, then Grep for the callers and callees you need. Read the changed ranges with enough surrounding code to judge them, not whole large files, unless the change really does span the file.
+- **Don't re-read** what you already have in context.
+- **Trim command output** with `tail` or `grep` to the failures and summary lines; rerun with more output only when you need it.
+- **Batch** related checks into one command, and don't wait with `sleep`.
+
 ## Hard rules
 - Do not fix anything. Do not edit project source, tests, or config. Report it; the caller decides the fix.
 - You may write throwaway scripts or test files only in a temp directory outside the project (or a clearly temporary file you delete before finishing), and must list any you created.
