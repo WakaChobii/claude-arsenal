@@ -1,14 +1,19 @@
 {
-  "name": "tiktok-skills",
-  "description": "Claude Code skills for making TikTok videos",
+  "name": "claude-arsenal",
+  "description": "WakaChobii's Claude Code arsenal: skills, subagents and workflows, packaged as separate plugins so you install only what you need",
   "owner": {
     "name": "WakaChobii",
     "url": "https://github.com/WakaChobii"
   },
   "plugins": [
     {
+      "name": "build-team",
+      "source": "./plugins/build-team",
+      "description": "A software team for Claude Code: code-explorer, code-builder and code-verifier subagents, plus the build-software skill that runs them as an explore, spec, build, verify loop"
+    },
+    {
       "name": "tiktok-skills",
-      "source": ".",
+      "source": "./plugins/tiktok-skills",
       "description": "TikTok-style on-screen text (add-text) and AI product-reveal remakes in new rooms (product-reveal)"
     }
   ]
